@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -79,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
         //Check if user is logged in
         FirebaseUser currentUser = mAuth.getCurrentUser();
-        if(currentUser != null){
+        if(currentUser != null && currentUser.isEmailVerified()){
             Toast.makeText(MainActivity.this, "Already Login", Toast.LENGTH_SHORT).show();
         }
 
@@ -124,6 +126,7 @@ public class MainActivity extends AppCompatActivity {
                         if (task.isSuccessful()) {
                             // Sign in success, update UI with the signed-in user's information
                             FirebaseUser user = mAuth.getCurrentUser();
+                            user.sendEmailVerification();
                             Toast.makeText(MainActivity.this, "Register Success!", Toast.LENGTH_SHORT).show();
                             login_views();
                         } else {
@@ -161,6 +164,13 @@ public class MainActivity extends AppCompatActivity {
                         // Sign in success, update UI with the signed-in user's information
                         //Log.d("tag", "signInWithEmail:success");
                         FirebaseUser user = mAuth.getCurrentUser();
+                        if(user.isEmailVerified()){
+                            startActivity(new Intent(MainActivity.this, Student_Activity.class));
+                            finish();
+                        }else{
+                            Toast.makeText(MainActivity.this, "Email Not Verified", Toast.LENGTH_SHORT).show();
+                            return;
+                        }
                         Toast.makeText(MainActivity.this, "Login Success!", Toast.LENGTH_SHORT).show();
                         //updateUI(user);
                     } else {
